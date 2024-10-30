@@ -12,12 +12,16 @@ contract FundMe {
 
     uint public minimumUsd = 5e18;
     
+    address[] public funders;
+    mapping(address funder => uint256 amountFunded) public addressToAmountFunded;
+
     function fund() public payable {
         // Allow users to sen $
         // Have a minimnm $ sent $5
         // 1. How do we send ETH to this contract?
         require(getConversionRate(msg.value) >= minimumUsd, "didn't send enough ETH"); // 1e18 = 1 ETH = 1000000000000000000 = 1 * 10 ** 18
-
+        funders.push(msg.sender);
+        addressToAmountFunded[msg.sender] = addressToAmountFunded[msg.sender] + msg.value;
         // What is a revert?
         // Undo any actions that have been done, and send the remaining gas back
     }
