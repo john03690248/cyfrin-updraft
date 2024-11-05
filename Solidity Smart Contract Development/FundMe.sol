@@ -16,6 +16,12 @@ contract FundMe {
     address[] public funders;
     mapping(address funder => uint256 amountFunded) public addressToAmountFunded;
 
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;    
+    }
+
     function fund() public payable {
         require(msg.value.getConversionRate() >= minimumUsd, "didn't send enough ETH"); // 1e18 = 1 ETH = 1000000000000000000 = 1 * 10 ** 18
         funders.push(msg.sender);
@@ -23,7 +29,7 @@ contract FundMe {
         // What is a revert?
         // Undo any actions that have been done, and send the remaining gas back
     }
-    function withdraw() public {
+    function withdraw() public onlyOwner {
         // for loop
         // [1, 2, 3, 4] elements
         //  0, 1, 2, 3  indexes
@@ -43,4 +49,10 @@ contract FundMe {
         (bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
         require(callSuccess, "Call failed");
     }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Sender is not owner!");
+        _;
+    }
+
 }
